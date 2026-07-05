@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Notate :P</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
+    />
+
+    <!--
+    IMPORTANT: this stylesheet now has id="hljsTheme".
+    app.js swaps its href between the light and dark highlight.js
+    themes whenever dark mode is toggled. Without the id, JS has
+    nothing to grab onto.
+  -->
+    <link
+      rel="stylesheet"
+      id="hljsTheme"
+      href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github.min.css"
+    />
+
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <!-- Space shader background: purely decorative, sits behind everything via z-index -->
+      <div class="topbar-space-bg">
+        <div class="topbar-nebula"></div>
+        <div class="topbar-stars" id="topbarStars"></div>
+        <div class="topbar-shooting-star"></div>
+        <div class="topbar-vignette"></div>
+      </div>
+
+      <div class="topbar-left">
+        <div class="analyze">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            height="24"
+            width="24"
+          >
+            <rect height="24" width="24"></rect>
+            <path
+              stroke-linecap="round"
+              stroke-width="1.5"
+              stroke="currentColor"
+              d="M19.25 9.25V5.25C19.25 4.42157 18.5784 3.75 17.75 3.75H6.25C5.42157 3.75 4.75 4.42157 4.75 5.25V18.75C4.75 19.5784 5.42157 20.25 6.25 20.25H12.25"
+              class="board"
+            ></path>
+            <path
+              d="M9.18748 11.5066C9.12305 11.3324 8.87677 11.3324 8.81234 11.5066L8.49165 12.3732C8.47139 12.4288 8.42823 12.4711 8.37348 12.4914L7.50681 12.8121C7.33269 12.8765 7.33269 13.1228 7.50681 13.1872L8.37348 13.5079C8.42823 13.5282 8.47139 13.5714 8.49165 13.6261L8.81234 14.4928C8.87677 14.6669 9.12305 14.6669 9.18748 14.4928L9.50818 13.6261C9.52844 13.5714 9.5716 13.5282 9.62634 13.5079L10.493 13.1872C10.6671 13.1228 10.6671 12.8765 10.493 12.8121L9.62634 12.4914C9.5716 12.4711 9.52844 12.4289 9.50818 12.3732L9.18748 11.5066Z"
+              class="star-2"
+            ></path>
+            <path
+              d="M11.7345 6.63394C11.654 6.41629 11.3461 6.41629 11.2656 6.63394L10.8647 7.71728C10.8394 7.78571 10.7855 7.83966 10.717 7.86498L9.63377 8.26585C9.41605 8.34639 9.41605 8.65424 9.63377 8.73478L10.717 9.13565C10.7855 9.16097 10.8394 9.21493 10.8647 9.28335L11.2656 10.3667C11.3461 10.5843 11.654 10.5843 11.7345 10.3667L12.1354 9.28335C12.1607 9.21493 12.2147 9.16097 12.2831 9.13565L13.3664 8.73478C13.5841 8.65424 13.5841 8.34639 13.3664 8.26585L12.2831 7.86498C12.2147 7.83966 12.1607 7.78571 12.1354 7.71728L11.7345 6.63394Z"
+              class="star-1"
+            ></path>
+            <path
+              class="stick"
+              stroke-linejoin="round"
+              stroke-width="1.5"
+              stroke="currentColor"
+              d="M17 14L21.2929 18.2929C21.6834 18.6834 21.6834 19.3166 21.2929 19.7071L20.7071 20.2929C20.3166 20.6834 19.6834 20.6834 19.2929 20.2929L15 16M17 14L15.7071 12.7071C15.3166 12.3166 14.6834 12.3166 14.2929 12.7071L13.7071 13.2929C13.3166 13.6834 13.3166 14.3166 13.7071 14.7071L15 16M17 14L15 16"
+            ></path>
+          </svg>
+        </div>
+        <input
+          id="fileLocation"
+          class="file-strip"
+          value="local/notes/untitled.md"
+          spellcheck="false"
+        />
+      </div>
+      <div class="topbar-right">
+        <span class="status" id="saveStatus">✓ Saved</span>
+        <button id="openFileBtn" class="icon-btn" title="Open a local file">
+          📂
+        </button>
+        <button id="searchToggleBtn" class="icon-btn" title="Search (Ctrl+F)">
+          🔍
+        </button>
+        <button
+          id="themeToggle"
+          class="icon-btn"
+          title="Toggle Dark/Light Mode"
+        >
+          🌙
+        <button id="exportBtn" class="icon-btn" title="Export Markdown">
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+    >
+        <path d="M12 3v12"/>
+        <path d="m7 10 5 5 5-5"/>
+        <path d="M5 21h14"/>
+    </svg>
+</button>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <section class="editor-pane" id="editorPane">
+        <div class="editor-toolbar" id="editorToolbar">
+          <button class="fmt-btn" data-action="bold" title="Bold (Ctrl+B)">
+            <strong>B</strong>
+          </button>
+          <button class="fmt-btn" data-action="italic" title="Italic (Ctrl+I)">
+            <em>I</em>
+          </button>
+          <span class="fmt-divider"></span>
+          <button class="fmt-btn" data-action="h1" title="Heading 1">H1</button>
+          <button class="fmt-btn" data-action="h2" title="Heading 2">H2</button>
+          <button class="fmt-btn" data-action="h3" title="Heading 3">H3</button>
+          <span class="fmt-divider"></span>
+          <button class="fmt-btn" data-action="quote" title="Blockquote">
+            "
+          </button>
+          <button class="fmt-btn" data-action="code" title="Inline code">
+            &lt;/&gt;
+          </button>
+          <button class="fmt-btn" data-action="codeblock" title="Code block">
+            {}
+          </button>
+          <span class="fmt-divider"></span>
+          <button class="fmt-btn" data-action="ul" title="Bullet list">
+            •
+          </button>
+          <button class="fmt-btn" data-action="ol" title="Numbered list">
+            1.
+          </button>
+          <button class="fmt-btn" data-action="task" title="Task list">
+            ☑
+          </button>
+          <span class="fmt-divider"></span>
+          <button class="fmt-btn" data-action="link" title="Link">🔗</button>
+          <button class="fmt-btn" data-action="wikilink" title="Wikilink">
+            [[]]
+          </button>
+        </div>
+
+        <!--
+        SEARCH BAR (Ctrl+F)
+        Hidden by default (see .search-bar { display:none } in CSS).
+        JS toggles the "visible" class on it.
+      -->
+        <div class="search-bar" id="searchBar">
+          <input
+            type="text"
+            id="searchInput"
+            placeholder="Find in document..."
+          />
+          <span class="search-count" id="searchCount">0/0</span>
+          <button class="search-btn" id="searchPrev" title="Previous match">
+            ↑
+          </button>
+          <button class="search-btn" id="searchNext" title="Next match">
+            ↓
+          </button>
+          <button class="search-btn" id="searchClose" title="Close (Esc)">
+            ✕
+          </button>
+        </div>
+
+        <div class="editor-container">
+          <div id="lineNumbers" class="line-numbers">1</div>
+          <textarea
+            id="editor"
+            spellcheck="false"
+            wrap="off"
+            placeholder="...
+
+Write naturally :)))
+
+Inline math: $V = IR$
+Display math: $$V(t) = V_m \sin(\omega t)$$
+
+Wikilink: [[ data ]]
+
+```mermaid
+graph LR
+A[Input] --> B[Output]
+```
+
+Tip: drag and drop an image file directly into this editor.
+
+..."
+          ></textarea>
+        </div>
+
+        <!--
+        STATUS BAR (live word count)
+        Sits under the textarea, inside the editor pane.
+      -->
+        <div class="status-bar" id="statusBar">
+          <span id="wordCount">Words: 0</span>
+          <span id="charCount">Characters: 0</span>
+          <span id="readingTime">Reading time: 0 min</span>
+          <span id="notateCredit">Notate 📗📘📙 ❤️ を込めて作りました ❤️</span>
+        </div>
+      </section>
+
+      <div class="resizer" id="resizer"></div>
+
+      <section class="preview-pane" id="previewPane">
+        <div class="outline-box" id="outlineBox">
+          <div class="outline-title">Contents</div>
+          <nav id="outlineList" class="outline-list"></nav>
+        </div>
+        <article class="article" id="article"></article>
+      </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/highlight.min.js"></script>
+
+    <script type="module">
+      import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs";
+
+      function initMermaid(isDark) {
+        mermaid.initialize({
+          startOnLoad: false,
+          theme: isDark ? "dark" : "neutral",
+          securityLevel: "loose",
+        });
+      }
+
+      initMermaid(
+        document.documentElement.getAttribute("data-theme") === "dark",
+      );
+      window.mermaid = mermaid;
+      window.reinitMermaidTheme = initMermaid;
+      window.dispatchEvent(new Event("mermaid-ready"));
+    </script>
+
+    <script src="app.js"></script>
+  </body>
+</html>

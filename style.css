@@ -1,0 +1,870 @@
+/* ==================================================
+   RESET & ROOT (Light/Dark Variables)
+   ================================================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --s1: 8px;
+  --s2: 16px;
+  --s3: 24px;
+  --s4: 32px;
+  --s5: 48px;
+  --s6: 64px;
+
+  /* Light Theme Default */
+  --border: #e6e6e6;
+  --border-strong: #cccccc;
+  --text: #111111;
+  --text-muted: #666666;
+  --text-faint: #999999;
+  --bg: #ffffff;
+  --bg-editor: #ffffff;
+  --code-bg: #f5f5f5;
+  --link: #0066cc;
+  --accent: #ffd54a;
+
+  --font-ui:
+    -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", "Segoe UI",
+    sans-serif;
+  --font-mono:
+    "Fira Code", "JetBrains Mono", Menlo, Monaco, Consolas, monospace;
+}
+
+[data-theme="dark"] {
+  --border: #333333;
+  --border-strong: #444444;
+  --text: #e0e0e0;
+  --text-muted: #a0a0a0;
+  --text-faint: #666666;
+  --bg: #121212;
+  --bg-editor: #181818;
+  --code-bg: #222222;
+  --link: #58a6ff;
+  --accent: #f2c94c;
+}
+
+html,
+body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-ui);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+/* ==================================================
+   TOPBAR
+   ================================================== */
+.topbar {
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--s3);
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+  /* Base color under the shader layers. Deliberately stays dark
+     regardless of light/dark mode -- it's a fixed brand strip. */
+  background: #000;
+}
+
+/* Everything real (logo, file path, buttons) sits above the shader */
+.topbar-left,
+.topbar-right {
+  position: relative;
+  z-index: 2;
+}
+
+/* --------------------------------------------------
+   SPACE SHADER BACKGROUND (scoped to .topbar only)
+   -------------------------------------------------- */
+.topbar-space-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+
+  background:
+    radial-gradient(circle at 20% 30%, rgba(80, 80, 80, 0.08), transparent 30%),
+    radial-gradient(
+      circle at 80% 60%,
+      rgba(100, 100, 100, 0.06),
+      transparent 35%
+    ),
+    #000;
+}
+
+.topbar-nebula {
+  opacity: 0.15;
+}
+
+@keyframes topbar-drift {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(2%, -3%) scale(1.05);
+  }
+  100% {
+    transform: translate(-2%, 2%) scale(1);
+  }
+}
+
+.topbar-stars {
+  position: absolute;
+  inset: 0;
+}
+.topbar-stars span::before,
+.topbar-stars span::after {
+  content: "";
+  position: absolute;
+
+  left: 50%;
+  top: 50%;
+
+  background: currentColor;
+
+  transform: translate(-50%, -50%);
+}
+
+.topbar-stars span::before {
+  width: 8px;
+  height: 1px;
+  opacity: 0.5;
+}
+
+.topbar-stars span::after {
+  width: 1px;
+  height: 8px;
+  opacity: 0.5;
+}
+
+.topbar-stars span {
+  position: absolute;
+
+  width: 2px;
+  height: 2px;
+
+  border-radius: 50%;
+
+  opacity: 0.95;
+
+  background: currentColor;
+
+  box-shadow:
+    0 0 2px currentColor,
+    0 0 5px currentColor,
+    0 0 10px currentColor;
+
+  animation: topbar-twinkle linear infinite;
+}
+
+@keyframes topbar-twinkle {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.8);
+  }
+}
+
+/* Distances scaled way down from the original (75em) to suit a 52px
+   strip instead of a full viewport -- otherwise the star flies off
+   in one frame. */
+.topbar-shooting-star {
+  position: absolute;
+  top: 30%;
+  left: 100%;
+
+  width: 140px;
+  height: 1px;
+
+  box-shadow:
+    0 0 5px white,
+    0 0 10px white,
+    0 0 18px rgba(255, 255, 255, 0.6);
+
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.95),
+    rgba(255, 255, 255, 0)
+  );
+
+  filter: blur(0.2px);
+
+  animation: topbar-shoot 12s linear infinite;
+}
+
+@keyframes topbar-shoot {
+  0% {
+    transform: translateX(0) translateY(0);
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+  }
+  45% {
+    transform: translateX(-30em) translateY(6em);
+    opacity: 1;
+  }
+  60% {
+    transform: translateX(-38em) translateY(8em);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(-38em) translateY(8em);
+    opacity: 0;
+  }
+}
+
+.topbar-vignette {
+  position: absolute;
+  inset: 0;
+
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.15),
+    rgba(0, 0, 0, 0.35)
+  );
+
+  pointer-events: none;
+}
+
+/* Topbar text/icons need to read clearly against the dark shader,
+   regardless of the site's light/dark mode. */
+.topbar .file-strip,
+.topbar .status,
+.topbar .icon-btn,
+.topbar .analyze svg {
+  color: #e8e2f5;
+}
+.topbar .file-strip:hover,
+.topbar .file-strip:focus {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+}
+.topbar .icon-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  flex: 1;
+  min-width: 0;
+}
+
+.analyze svg {
+  color: var(--text);
+}
+.analyze svg path.stick {
+  animation: stick 2s ease infinite;
+}
+.analyze svg path.star-1 {
+  fill: #ff4500;
+  animation:
+    sparkles 2s ease infinite,
+    scaleStars 2s ease infinite,
+    colorChange 2s ease infinite;
+  animation-delay: 150ms;
+}
+.analyze svg path.star-2 {
+  fill: #00ff00;
+  animation:
+    sparkles 2s ease infinite,
+    scaleStars 2s ease infinite,
+    colorChange 2s ease infinite;
+}
+.board {
+  animation: bounce 2s ease infinite;
+}
+
+@keyframes sparkles {
+  0%,
+  35%,
+  75%,
+  100% {
+    opacity: 1;
+  }
+  55% {
+    opacity: 0;
+  }
+}
+@keyframes stick {
+  0%,
+  25%,
+  75%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0);
+  }
+  50% {
+    transform: translate3d(3px, -2px, 0) rotate(8deg);
+  }
+}
+@keyframes scaleStars {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.9);
+  }
+}
+@keyframes bounce {
+  0%,
+  25%,
+  50%,
+  100% {
+    transform: translateY(0);
+  }
+  75% {
+    transform: translateY(-1px);
+  }
+}
+@keyframes colorChange {
+  0%,
+  100% {
+    fill: #ff4500;
+  }
+  25% {
+    fill: #ffd700;
+  }
+  50% {
+    fill: #00ff00;
+  }
+  75% {
+    fill: #1e90ff;
+  }
+}
+
+.file-strip {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text-muted);
+  letter-spacing: 0.01em;
+  padding: 4px 6px;
+  max-width: 480px;
+  width: 100%;
+  transition:
+    color 0.15s ease,
+    background 0.15s ease;
+}
+.file-strip:hover,
+.file-strip:focus {
+  color: var(--text);
+  background: var(--code-bg);
+  border-radius: 4px;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  flex-shrink: 0;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+
+  gap: 6px;
+
+  margin-left: 14px;
+  padding-left: 14px;
+
+  border-left: 1px solid rgba(255, 255, 255, 0.12);
+
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 500;
+
+  color: #8d8d8d;
+
+  white-space: nowrap;
+
+  transition: 0.2s ease;
+}
+
+.icon-btn {
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background 0.15s;
+}
+.icon-btn:hover {
+  background: var(--code-bg);
+}
+
+.icon-btn svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+/* ==================================================
+   WORKSPACE & EDITOR
+   ================================================== */
+.workspace {
+  display: flex;
+  height: calc(100vh - 52px);
+  overflow: hidden;
+}
+
+.editor-pane {
+  width: 50%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--border);
+  background: var(--bg-editor);
+  position: relative; /* anchors the drag-over overlay + search bar */
+}
+
+/* Visual feedback while dragging an image over the editor pane */
+.editor-pane.drag-over::after {
+  content: "Drop image to insert";
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--bg) 80%, transparent);
+  border: 2px dashed var(--link);
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--link);
+  pointer-events: none;
+}
+
+.editor-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 6px var(--s2);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  background: var(--bg);
+}
+
+.fmt-btn {
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: var(--font-ui);
+  font-size: 12.5px;
+  padding: 6px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  line-height: 1;
+  transition:
+    color 0.12s,
+    background 0.12s;
+}
+.fmt-btn:hover {
+  color: var(--text);
+  background: var(--code-bg);
+}
+.fmt-divider {
+  width: 1px;
+  height: 16px;
+  background: var(--border);
+  margin: 0 4px;
+}
+
+/* --------------------------------------------------
+   SEARCH BAR (Ctrl+F)
+   -------------------------------------------------- */
+.search-bar {
+  display: none; /* toggled to flex via .visible in JS */
+  align-items: center;
+  gap: 6px;
+  padding: 6px var(--s2);
+  border-bottom: 1px solid var(--border);
+  background: var(--code-bg);
+  flex-shrink: 0;
+}
+.search-bar.visible {
+  display: flex;
+}
+
+.search-bar #searchInput {
+  flex: 1;
+  min-width: 0;
+  padding: 5px 8px;
+  border: 1px solid var(--border-strong);
+  border-radius: 4px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  outline: none;
+}
+.search-bar #searchInput:focus {
+  border-color: var(--link);
+}
+
+.search-count {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--text-faint);
+  white-space: nowrap;
+  min-width: 44px;
+  text-align: center;
+}
+
+.search-btn {
+  border: 1px solid var(--border-strong);
+  background: var(--bg);
+  color: var(--text-muted);
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition:
+    color 0.12s,
+    border-color 0.12s;
+}
+.search-btn:hover {
+  color: var(--text);
+  border-color: var(--text);
+}
+
+.editor-container {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+.line-numbers {
+  width: 45px;
+  padding: var(--s4) 8px var(--s4) 0;
+  text-align: right;
+  font-family: var(--font-mono);
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: var(--text-faint);
+  background: var(--bg-editor);
+  border-right: 1px solid var(--border);
+  overflow: hidden;
+  user-select: none;
+}
+
+#editor {
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: auto;
+  border: none;
+  outline: none;
+  resize: none;
+  padding: var(--s4);
+  font-family: var(--font-mono);
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: var(--text);
+  background: transparent;
+  white-space: pre;
+}
+#editor::placeholder {
+  color: var(--text-faint);
+}
+
+/* Highlight color used when the search feature selects a match */
+#editor::selection {
+  background: var(--accent);
+  color: #111;
+}
+
+/* --------------------------------------------------
+   STATUS BAR (live word count)
+   -------------------------------------------------- */
+.status-bar {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--s3);
+  padding: 6px var(--s3);
+  border-top: 1px solid var(--border);
+  background: var(--bg);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-faint);
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.resizer {
+  width: 4px;
+  cursor: col-resize;
+  background: transparent;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+.resizer:hover {
+  background: var(--link);
+}
+
+.preview-pane {
+  flex: 1;
+  height: 100%;
+  overflow-y: auto;
+  padding: var(--s6) var(--s4) var(--s6);
+  background: var(--bg);
+}
+
+/* ==================================================
+   OUTLINE / TOC
+   ================================================== */
+.outline-box {
+  max-width: 760px;
+  margin: 0 auto var(--s4);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: var(--s2) var(--s3);
+  background: var(--code-bg);
+}
+.outline-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-faint);
+  margin-bottom: var(--s1);
+}
+.outline-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.outline-list a {
+  font-size: 13.5px;
+  color: var(--text-muted);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  width: fit-content;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+.outline-list a:hover {
+  color: var(--text);
+  border-color: var(--text);
+}
+.outline-list .lvl-1 {
+  padding-left: 0;
+  font-weight: 500;
+}
+.outline-list .lvl-2 {
+  padding-left: var(--s2);
+}
+.outline-list .lvl-3 {
+  padding-left: var(--s3);
+}
+.outline-empty {
+  font-size: 13px;
+  color: var(--text-faint);
+  font-style: italic;
+}
+
+/* ==================================================
+   ARTICLE / PREVIEW CONTENT
+   ================================================== */
+.article {
+  max-width: 760px;
+  margin: 0 auto;
+  font-size: 17px;
+  line-height: 1.75;
+  color: var(--text);
+}
+.article h1 {
+  font-size: 38px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  margin-bottom: var(--s3);
+  margin-top: var(--s2);
+}
+.article h2 {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-top: var(--s5);
+  margin-bottom: var(--s2);
+  scroll-margin-top: var(--s3);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 8px;
+}
+.article h3 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-top: var(--s4);
+  margin-bottom: var(--s2);
+  scroll-margin-top: var(--s3);
+}
+.article p {
+  margin-bottom: var(--s2);
+}
+.article ul,
+.article ol {
+  margin: 0 0 var(--s2) var(--s3);
+}
+.article li {
+  margin-bottom: 4px;
+}
+.article blockquote {
+  border-left: 3px solid var(--text-muted);
+  padding-left: var(--s2);
+  color: var(--text-muted);
+  font-style: italic;
+  margin: var(--s3) 0;
+}
+.article hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: var(--s4) 0;
+}
+.article a {
+  color: var(--link);
+  text-decoration: none;
+  border-bottom: 1px solid var(--link);
+}
+.article table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: var(--s3) 0;
+  font-size: 15px;
+}
+.article th,
+.article td {
+  border: 1px solid var(--border);
+  padding: var(--s1) var(--s2);
+  text-align: left;
+}
+.article th {
+  background: var(--code-bg);
+  font-weight: 600;
+}
+.article img {
+  max-width: 100%;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+.article code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: var(--code-bg);
+  padding: 3px 6px;
+  border-radius: 4px;
+}
+
+/* ==================================================
+   CODE BLOCKS
+   ================================================== */
+.code-block-wrapper {
+  position: relative;
+  margin: var(--s3) 0;
+}
+.code-block-wrapper pre {
+  background: var(--code-bg);
+  padding: var(--s2);
+  overflow-x: auto;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.6;
+  border: 1px solid var(--border);
+}
+.code-block-wrapper pre code {
+  background: none;
+  padding: 0;
+  border: none;
+  font-family: var(--font-mono);
+}
+.copy-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  border: 1px solid var(--border-strong);
+  background: var(--bg);
+  color: var(--text-muted);
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  opacity: 0;
+  transition: all 0.15s ease;
+}
+.code-block-wrapper:hover .copy-btn {
+  opacity: 1;
+}
+.copy-btn:hover {
+  color: var(--text);
+  border-color: var(--text);
+}
+.copy-btn.copied {
+  background: var(--text);
+  color: var(--bg);
+  border-color: var(--text);
+  opacity: 1;
+}
+
+/* Wiki Links */
+.wiki-link {
+  color: var(--link);
+  background: var(--code-bg);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 15px;
+  cursor: pointer;
+  text-decoration: none;
+  border: 1px solid var(--border);
+}
+.wiki-link:hover {
+  border-color: var(--link);
+}
+
+.empty-state {
+  color: var(--text-faint);
+  font-style: italic;
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 5px;
+  border: 2px solid var(--bg);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-faint);
+}
